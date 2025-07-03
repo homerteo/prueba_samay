@@ -1,0 +1,37 @@
+/* 
+  TODO: Implementar estilos globales profesionales
+  
+  Recomendaciones:
+  - Usar variables CSS para consistencia
+  - Implementar theme switching (light/dark)
+  - Crear utilities classes reutilizables
+  - Asegurar responsive design
+  - Considerar accesibilidad (contraste, focus states)
+*/
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background: #f5f5f5;
+}
+
+/* 
+  TODO: Agregar tus estilos aquí
+  
+  Considera implementar:
+  - Variables CSS para colores y espaciado
+  - Grid y flexbox utilities
+  - Button styles
+  - Card components
+  - Loading states
+  - Animation utilities
+  - Responsive breakpoints
+*/
