@@ -6,6 +6,9 @@ import { provideHttpClient } from '@angular/common/http';
 
 // Componente temporal hasta que crees el tuyo
 import { Component } from '@angular/core';
+import { WebsocketService } from './app/services/websocket.service';
+import { ErrorService } from './app/services/error.service';
+import { StateService } from './app/services/state.service';
 
 @Component({
   standalone: true,
@@ -76,6 +79,9 @@ class TempAppComponent {}
 bootstrapApplication(TempAppComponent, {
   providers: [
     provideHttpClient(),
+    WebsocketService,
+    ErrorService,
+    StateService
     // TODO: Agregar tus providers aquí (interceptors, servicios, etc.)
   ]
 }).catch(err => console.error(err));
