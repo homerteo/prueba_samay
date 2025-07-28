@@ -104,7 +104,7 @@ export class WebsocketService {
         this.actualizarMetricas({ mensajesEnviados: this._metricas().mensajesEnviados + 1 });
         return true;
       } catch (error) {
-        // this.errorService.registrarErrorWebSocket(`Error enviando comando: ${error}`);
+        this.errorService.registrarErrorWebSocket(`Error enviando comando: ${error}`);
         return false;
       }
     } else {
@@ -167,7 +167,7 @@ export class WebsocketService {
         this.procesarMensaje(mensaje);
         this.actualizarMetricas({ mensajesRecibidos: this._metricas().mensajesRecibidos + 1 });
       } catch (error) {
-        // this.errorService.registrarErrorWebSocket(`Error parseando mensaje: ${error}`, event.data);
+        this.errorService.registrarErrorWebSocket(`Error parseando mensaje: ${error}`, event.data);
       }
     };
 
@@ -202,13 +202,12 @@ export class WebsocketService {
     // Manejar tipos específicos de mensaje
     switch (mensaje.tipo) {
       case 'error_sensor':
-        // this.errorService.registrarErrorSensor(mensaje.datos);
+        this.errorService.registrarErrorSensor(mensaje.datos);
         break;
       case 'error_servidor':
-        // this.errorService.registrarErrorWebSocket(mensaje.mensaje, mensaje);
+        this.errorService.registrarErrorWebSocket(mensaje.mensaje, mensaje);
         break;
       case 'pong':
-        // Heartbeat response - conexión OK
         break;
     }
   }
@@ -219,7 +218,7 @@ export class WebsocketService {
   private manejarErrorConexion(error: any): void {
     this.actualizarEstado('error');
     this.actualizarMetricas({ erroresConexion: this._metricas().erroresConexion + 1 });
-    // this.errorService.registrarErrorWebSocket(error);
+    this.errorService.registrarErrorWebSocket(error);
     
     if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
       this.programarReconexion();
