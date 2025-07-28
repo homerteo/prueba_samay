@@ -1,1 +1,43 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+    <!-- Header principal -->
+    <app-header></app-header>
+
+    <main>
+        @if(loading) {
+            <div class="loading-container">
+            <app-loading 
+              message="Cargando sistema IoT..." 
+              size="large">
+            </app-loading>
+            </div>
+        } @else {
+            <h1 class="">Visión general del sistema IoT</h1>
+                          <!-- Estadísticas generales -->
+              <div class="stats-grid">
+                <div class="stat-card total">
+                  <div class="stat-icon">🔍</div>
+                  <div class="stat-content">
+                    <div class="stat-number">{{ estadisticasGenerales().totalSensores }}</div>
+                    <div class="stat-title">Total Sensores</div>
+                  </div>
+                </div>
+                
+                <div class="stat-card active">
+                  <div class="stat-icon">✅</div>
+                  <div class="stat-content">
+                    <div class="stat-number">{{ estadisticasGenerales().sensoresActivos }}</div>
+                    <div class="stat-title">Funcionando</div>
+                  </div>
+                </div>
+                
+                <div class="stat-card error">
+                  <div class="stat-icon">❌</div>
+                  <div class="stat-content">
+                    <div class="stat-number">{{ estadisticasGenerales().sensoresConError }}</div>
+                    <div class="stat-title">Con Errores</div>
+                  </div>
+                </div>
+              </div>
+        }
+    </main>
+</div>

@@ -1,1 +1,22 @@
-<p>header works!</p>
+<header class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+        <h1 class="navbar-brand mb-0 h1">IOT Dashboard</h1>
+    </div>        
+    <nav class="d-none d-lg-flex">
+        <a class="nav-link text-white me-4" routerLink="/resumen" routerLinkActive="active">
+            <i class="bi bi-speedometer2 me-1"></i>Resumen
+        </a>
+        <a class="nav-link text-white me-4" routerLink="/sensores" routerLinkActive="active">
+            <i class="bi bi-cpu me-1"></i>Sensores
+        </a>
+        <a class="nav-link text-white me-4" routerLink="/alertas" routerLinkActive="active">
+            <i class="bi bi-exclamation-triangle me-1"></i>Alertas
+        </a>
+        <a class="nav-link text-white me-4" routerLink="/historial" routerLinkActive="active">
+            <i class="bi bi-clock-history me-1"></i>Historial
+        </a>
+        <a class="nav-link text-white" routerLink="/ajustes" routerLinkActive="active">
+            <i class="bi bi-gear me-1"></i>Ajustes
+        </a>
+    </nav>
+</header>

@@ -1,1 +1,11 @@
-<p>loading works!</p>
+    <div class="loading-container" [ngClass]="size">
+  <div class="spinner">
+    <div class="spinner-ring"></div>
+  </div>
+  
+  @if (message) {
+    <div class="loading-message">
+      {{ message }}
+    </div>
+  }
+</div>
