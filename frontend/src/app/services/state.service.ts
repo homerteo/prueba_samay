@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { ErrorSensor, EstadisticasServidor, EstadoAplicacion, EstadoConexion, InfoSensor, LecturaSensor } from '../types/sensor.types';
+import { ErrorSensor, EstadisticasServidor, EstadoAplicacion, EstadoConexion, EstadoSensor, InfoSensor, LecturaSensor, TipoSensor } from '../types/sensor.types';
 import { BehaviorSubject } from 'rxjs';
 import { WebsocketService } from './websocket.service';
 
@@ -26,31 +26,17 @@ export class StateService {
   estadisticasServidor = this._estadisticasServidor.asReadonly();
   clienteId = this._clienteId.asReadonly();
 
-    // Computed signals para datos derivados
+  // Computed signals
   sensoresArray = computed(() => Array.from(this._sensores().values()));
-  lecturasArray = computed(() => Array.from(this._lecturas().values()));
   totalSensores = computed(() => this._sensores().size);
+  lecturasArray = computed(() => Array.from(this._lecturas().values()));
   sensoresActivos = computed(() => 
     this.sensoresArray().filter(sensor => sensor.estado !== 'offline').length
   );
   sensoresConError = computed(() => 
     this.sensoresArray().filter(sensor => sensor.estado === 'error').length
   );
-  
-  // Sensores por tipo
-  sensoresTemperatura = computed(() => 
-    this.sensoresArray().filter(sensor => sensor.tipo === 'temperatura')
-  );
-  sensoresHumedad = computed(() => 
-    this.sensoresArray().filter(sensor => sensor.tipo === 'humedad')
-  );
-  sensoresLuz = computed(() => 
-    this.sensoresArray().filter(sensor => sensor.tipo === 'luz')
-  );
-  sensoresMovimiento = computed(() => 
-    this.sensoresArray().filter(sensor => sensor.tipo === 'movimiento')
-  );
-  lecturasRecientes = computed(() => {
+    lecturasRecientes = computed(() => {
     const hace24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
     return this.lecturasArray().filter(lectura => 
       new Date(lectura.timestamp) > hace24h
@@ -73,6 +59,20 @@ export class StateService {
     if (activos === total) return 'saludable';
     return 'normal';
   });
+  // Sensores por tipo
+  sensoresTemperatura = computed(() => 
+    this.sensoresArray().filter(sensor => sensor.tipo === 'temperatura')
+  );
+  sensoresHumedad = computed(() => 
+    this.sensoresArray().filter(sensor => sensor.tipo === 'humedad')
+  );
+  sensoresLuz = computed(() => 
+    this.sensoresArray().filter(sensor => sensor.tipo === 'luz')
+  );
+  sensoresMovimiento = computed(() => 
+    this.sensoresArray().filter(sensor => sensor.tipo === 'movimiento')
+  );
+
 
   //observable del estado para compatibilidad con rxjs 
   estado$ = this.estadoSubject.asObservable();
@@ -92,7 +92,7 @@ export class StateService {
     });
   }
 
-    private procesarMensajeWebSocket(mensaje: any): void {
+  private procesarMensajeWebSocket(mensaje: any): void {
     switch (mensaje.tipo) {
       case 'conexion_establecida':
         this._clienteId.set(mensaje.clienteId);
@@ -120,6 +120,7 @@ export class StateService {
     // Emitir estado actualizado
     this.estadoSubject.next(this.obtenerEstadoCompleto());
   }
+
 
   agregarErrorSensor(error: ErrorSensor): void {
     const erroresActuales = this._erroresSensor();
@@ -181,7 +182,7 @@ export class StateService {
     this._sensores.set(sensoresActuales);
   }
 
-    actualizarLecturaSensor(lectura: LecturaSensor): void {
+  actualizarLecturaSensor(lectura: LecturaSensor): void {
     // Actualizar lectura
     const lecturasActuales = new Map(this._lecturas());
     lecturasActuales.set(lectura.sensorId, lectura);
@@ -199,5 +200,100 @@ export class StateService {
       sensoresActuales.set(lectura.sensorId, sensorActualizado);
       this._sensores.set(sensoresActuales);
     }
+  }
+
+  obtenerSensor(sensorId: string): InfoSensor | undefined {
+    return this._sensores().get(sensorId);
+  }
+
+  obtenerUltimaLectura(sensorId: string): LecturaSensor | undefined {
+    return this._lecturas().get(sensorId);
+  }
+
+  obtenerSensoresPorTipo(tipo: TipoSensor): InfoSensor[] {
+    return this.sensoresArray().filter(sensor => sensor.tipo === tipo);
+  }
+
+  obtenerSensoresPorEstado(estado: EstadoSensor): InfoSensor[] {
+    return this.sensoresArray().filter(sensor => sensor.estado === estado);
+  }
+
+  obtenerSensoresPorZona(zona: string): InfoSensor[] {
+    return this.sensoresArray().filter(sensor => sensor.ubicacion.zona === zona);
+  }
+
+  obtenerHistorialSensor(sensorId: string, limite: number = 100): LecturaSensor[] {
+    return this.lecturasArray()
+      .filter(lectura => lectura.sensorId === sensorId)
+      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .slice(0, limite);
+  }
+
+  limpiarDatosAntiguos(): void {
+    const hace7dias = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    
+    // Limpiar lecturas antiguas
+    const lecturasActuales = new Map(this._lecturas());
+    lecturasActuales.forEach((lectura, key) => {
+      if (new Date(lectura.timestamp) < hace7dias) {
+        lecturasActuales.delete(key);
+      }
+    });
+    this._lecturas.set(lecturasActuales);
+
+    // Limpiar errores antiguos
+    const erroresRecientes = this._erroresSensor().filter(error => 
+      new Date(error.timestamp) >= hace7dias
+    );
+    this._erroresSensor.set(erroresRecientes);
+  }
+
+  resetearEstado(): void {
+    this._sensores.set(new Map());
+    this._lecturas.set(new Map());
+    this._erroresSensor.set([]);
+    this._estadisticasServidor.set(null);
+    this._clienteId.set(null);
+  }
+
+  obtenerEstadisticas() {
+    const sensores = this.sensoresArray();
+    const lecturas = this.lecturasArray();
+    const errores = this._erroresSensor();
+
+    return {
+      sensores: {
+        total: sensores.length,
+        activos: sensores.filter(s => s.estado !== 'offline').length,
+        conError: sensores.filter(s => s.estado === 'error').length,
+        porTipo: {
+          temperatura: sensores.filter(s => s.tipo === 'temperatura').length,
+          humedad: sensores.filter(s => s.tipo === 'humedad').length,
+          luz: sensores.filter(s => s.tipo === 'luz').length,
+          movimiento: sensores.filter(s => s.tipo === 'movimiento').length
+        }
+      },
+      lecturas: {
+        total: lecturas.length,
+        recientes: this.lecturasRecientes().length
+      },
+      errores: {
+        total: errores.length,
+        recientes: this.erroresRecientes().length
+      },
+      salud: this.estadoSalud()
+    };
+  }
+
+  suscribirSensor(sensorId: string): void {
+    this.webSocketService.suscribirSensor(sensorId);
+  }
+
+  actualizarSensores(): void {
+    this.webSocketService.solicitarSensores();
+  }
+
+  actualizarEstadisticasServidor(): void {
+    this.webSocketService.solicitarEstadisticas();
   }
 }
