@@ -73,6 +73,118 @@ export class StateService {
     this.sensoresArray().filter(sensor => sensor.tipo === 'movimiento')
   );
 
+    // =================== MÉTODOS PARA ZONAS ===================
+
+  /**
+   * Obtener todas las zonas únicas de los sensores
+   */
+  zonasUnicas = computed(() => {
+    const zonas = new Set<string>();
+    this.sensoresArray().forEach(sensor => {
+      zonas.add(sensor.ubicacion.zona);
+    });
+    return Array.from(zonas).sort();
+  });
+
+  sensoresPorZona = computed(() => {
+    const sensoresPorZona = new Map<string, InfoSensor[]>();
+    
+    this.sensoresArray().forEach(sensor => {
+      const zona = sensor.ubicacion.zona;
+      if (!sensoresPorZona.has(zona)) {
+        sensoresPorZona.set(zona, []);
+      }
+      sensoresPorZona.get(zona)!.push(sensor);
+    });
+    
+    return sensoresPorZona;
+  });
+
+  estadisticasPorZona = computed(() => {
+    const estadisticas = new Map<string, import('../types/sensor.types').EstadisticasZona>();
+    
+    this.sensoresPorZona().forEach((sensores, zona) => {
+      const activos = sensores.filter(s => s.estado !== 'offline').length;
+      const conError = sensores.filter(s => s.estado === 'error').length;
+      const conAdvertencia = sensores.filter(s => s.estado === 'advertencia').length;
+      const inactivos = sensores.length - activos;
+      
+      // Calcular estado principal de la zona
+      let estadoPrincipal: import('../types/sensor.types').EstadoSensor = 'normal';
+      if (conError > 0) estadoPrincipal = 'error';
+      else if (conAdvertencia > 0) estadoPrincipal = 'advertencia';
+      else if (inactivos === sensores.length) estadoPrincipal = 'offline';
+      
+      // Obtener edificios y habitaciones únicas
+      const edificios = [...new Set(sensores.map(s => s.ubicacion.edificio))];
+      const habitaciones = [...new Set(sensores.map(s => s.ubicacion.habitacion))];
+      
+      estadisticas.set(zona, {
+        zona,
+        totalSensores: sensores.length,
+        sensoresActivos: activos,
+        sensoresInactivos: inactivos,
+        sensoresConError: conError,
+        sensoresConAdvertencia: conAdvertencia,
+        porcentajeSalud: sensores.length > 0 ? Math.round((activos / sensores.length) * 100) : 0,
+        estadoPrincipal,
+        ultimaActualizacion: new Date(),
+        edificios: edificios.sort(),
+        habitaciones: habitaciones.sort()
+      });
+    });
+    
+    return estadisticas;
+  });
+
+  resumenZonas = computed(() => {
+    const resumenes: import('../types/sensor.types').ResumenZona[] = [];
+    
+    this.estadisticasPorZona().forEach((stats, zona) => {
+      const sensoresZona = this.sensoresPorZona().get(zona) || [];
+      
+      // Contar sensores por tipo
+      const sensoresPorTipo: Record<import('../types/sensor.types').TipoSensor, number> = {
+        temperatura: 0,
+        humedad: 0,
+        luz: 0,
+        movimiento: 0
+      };
+      
+      sensoresZona.forEach(sensor => {
+        sensoresPorTipo[sensor.tipo]++;
+      });
+      
+      resumenes.push({
+        zona: stats.zona,
+        estadoGeneral: stats.estadoPrincipal,
+        totalSensores: stats.totalSensores,
+        sensoresActivos: stats.sensoresActivos,
+        porcentajeSalud: stats.porcentajeSalud,
+        alertasActivas: stats.sensoresConError + stats.sensoresConAdvertencia,
+        sensoresPorTipo
+      });
+    });
+    
+    return resumenes.sort((a, b) => a.zona.localeCompare(b.zona));
+  });
+  zonaMejorSalud = computed(() => {
+    const resumenes = this.resumenZonas();
+    if (resumenes.length === 0) return null;
+    
+    return resumenes.reduce((mejor, actual) => 
+      actual.porcentajeSalud > mejor.porcentajeSalud ? actual : mejor
+    );
+  });
+  zonaPeorSalud = computed(() => {
+    const resumenes = this.resumenZonas();
+    if (resumenes.length === 0) return null;
+    
+    return resumenes.reduce((peor, actual) => 
+      actual.porcentajeSalud < peor.porcentajeSalud ? actual : peor
+    );
+  });
+
 
   //observable del estado para compatibilidad con rxjs 
   estado$ = this.estadoSubject.asObservable();
@@ -295,5 +407,13 @@ export class StateService {
 
   actualizarEstadisticasServidor(): void {
     this.webSocketService.solicitarEstadisticas();
+  }
+
+  obtenerSensoresDeZona(zona: string): InfoSensor[] {
+    return this.sensoresPorZona().get(zona) || [];
+  }
+
+  obtenerEstadisticasZona(zona: string): import('../types/sensor.types').EstadisticasZona | undefined {
+    return this.estadisticasPorZona().get(zona);
   }
 }

@@ -199,3 +199,28 @@ export interface CategoriaError {
   userMessage: string;
   technicalMessage: string;
 }
+
+export interface EstadisticasZona {
+  zona: string;
+  totalSensores: number;
+  sensoresActivos: number;
+  sensoresInactivos: number;
+  sensoresConError: number;
+  sensoresConAdvertencia: number;
+  porcentajeSalud: number;
+  estadoPrincipal: EstadoSensor;
+  ultimaActualizacion: Date;
+  edificios: string[];
+  habitaciones: string[];
+}
+
+// Resumen de zona
+export interface ResumenZona {
+  zona: string;
+  estadoGeneral: EstadoSensor;
+  totalSensores: number;
+  sensoresActivos: number;
+  porcentajeSalud: number;
+  alertasActivas: number;
+  sensoresPorTipo: Record<TipoSensor, number>;
+}

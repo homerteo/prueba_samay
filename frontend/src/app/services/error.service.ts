@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { CategoriaError, TipoError, SeveridadError, ErrorSensor } from '../types/sensor.types';
+import { CategoriaError, ErrorSensor } from '../types/sensor.types';
 
 @Injectable({
   providedIn: 'root'
@@ -108,7 +108,6 @@ export class ErrorService {
     });
   }
 
-
   /**
    * Registra un error de WebSocket
    */
@@ -121,24 +120,6 @@ export class ErrorService {
       timestamp: new Date().toISOString()
     });
   }
-
-  /**
-   * Limpia errores antiguos
-   */
-  limpiarErrores(): void {
-    this._errores.set([]);
-    this._errorLog.set([]);
-  }
-
-
-  /**
-   * Obtiene errores recientes (últimas 24 horas)
-   */
-  obtenerErroresRecientes(): ErrorSensor[] {
-    const hace24h = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    return this._errores().filter(error => new Date(error.timestamp) > hace24h);
-  }
-
 
   /**
    * Logger interno
@@ -155,9 +136,6 @@ export class ErrorService {
     
     // Log a consola para desarrollo
     console.error(logEntry, metadata);
-    
-    // Aquí se podría enviar a un servicio de telemetría externo
-    // this.enviarTelemetria(errorId, type, source, message, metadata);
   }
 
   /**
@@ -166,5 +144,4 @@ export class ErrorService {
   private generarErrorId(): string {
     return `ERR_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
   }
-
 }

@@ -1,0 +1,477 @@
+.zona-overview {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ====== CARD PADRE: ESTADO POR ZONAS ====== */
+.estado-zonas-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.card-title {
+    margin: 0 0 24px 0;
+    color: #1e293b;
+    font-size: 1.5em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Grid de Cards Hijas - Resumen de Zonas */
+.zonas-resumen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.zona-resumen-card {
+    position: relative;
+    background: #fafafa;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.zona-resumen-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.zona-resumen-card.normal {
+    border-color: #22c55e;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.zona-resumen-card.advertencia {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.zona-resumen-card.error {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+}
+
+.zona-resumen-card.offline {
+    border-color: #6b7280;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.zona-resumen-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.zona-icono {
+    font-size: 1.8em;
+}
+
+.zona-nombre {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.zona-resumen-content {
+    position: relative;
+}
+
+.sensores-count {
+    text-align: center;
+}
+
+.count-number {
+    display: block;
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1;
+}
+
+.count-label {
+    font-size: 0.9em;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
+}
+
+/* Badge de Estado (esquina inferior derecha) */
+.estado-badge {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.estado-badge.normal {
+    background: #22c55e;
+    color: white;
+}
+
+.estado-badge.advertencia {
+    background: #f59e0b;
+    color: white;
+}
+
+.estado-badge.error {
+    background: #ef4444;
+    color: white;
+}
+
+.estado-badge.offline {
+    background: #6b7280;
+    color: white;
+}
+
+.alertas-count {
+    background: rgba(255,255,255,0.2);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8em;
+    font-weight: 700;
+}
+
+.no-zonas-resumen {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+}
+
+/* ====== CARDS PADRE POR ZONA CON SENSORES ====== */
+.zona-detalle-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
+}
+
+.zona-detalle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.zona-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.zona-icono-grande {
+    font-size: 2.5em;
+}
+
+.zona-title-info h3 {
+    margin: 0 0 4px 0;
+    color: #1e293b;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.zona-stats {
+    color: #64748b;
+    font-size: 0.9em;
+}
+
+.zona-estado-global {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.zona-estado-global.normal {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.zona-estado-global.advertencia {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+}
+
+.zona-estado-global.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+.zona-estado-global.offline {
+    background: rgba(107, 114, 128, 0.1);
+    color: #4b5563;
+}
+
+/* Grid de Sensores Detallados */
+.sensores-detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+}
+
+.sensor-detalle-card {
+    background: #fafafa;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    transition: all 0.3s ease;
+}
+
+.sensor-detalle-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.sensor-detalle-card.normal {
+    border-color: #22c55e;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+}
+
+.sensor-detalle-card.advertencia {
+    border-color: #f59e0b;
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.sensor-detalle-card.error {
+    border-color: #ef4444;
+    background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+}
+
+.sensor-detalle-card.offline {
+    border-color: #6b7280;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+}
+
+.sensor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.sensor-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sensor-tipo-icon {
+    font-size: 1.2em;
+}
+
+.sensor-title h5 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.sensor-estado-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.sensor-estado-badge.normal {
+    background: rgba(34, 197, 94, 0.15);
+    color: #16a34a;
+}
+
+.sensor-estado-badge.advertencia {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+}
+
+.sensor-estado-badge.error {
+    background: rgba(239, 68, 68, 0.15);
+    color: #dc2626;
+}
+
+.sensor-estado-badge.offline {
+    background: rgba(107, 114, 128, 0.15);
+    color: #4b5563;
+}
+
+/* Lectura del Sensor */
+.sensor-lectura {
+    text-align: center;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 8px;
+}
+
+.lectura-valor {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 4px;
+}
+
+.valor {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.unidad {
+    font-size: 0.9em;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.lectura-timestamp {
+    font-size: 0.75em;
+    color: #64748b;
+}
+
+.sin-lectura {
+    color: #9ca3af;
+}
+
+.placeholder {
+    display: block;
+    font-size: 1.8em;
+    font-weight: 700;
+    margin-bottom: 4px;
+}
+
+.sin-datos {
+    font-size: 0.75em;
+}
+
+/* Ubicación Específica */
+.sensor-ubicacion {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 8px;
+}
+
+.ubicacion-icon {
+    font-size: 0.9em;
+}
+
+.ubicacion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.habitacion {
+    font-size: 0.9em;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.edificio {
+    font-size: 0.8em;
+    color: #64748b;
+}
+
+/* Indicadores adicionales */
+.sensor-indicadores {
+    margin-top: 8px;
+}
+
+.rango-indicator {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-weight: 600;
+    text-align: center;
+}
+
+.rango-indicator.en-rango {
+    background: rgba(34, 197, 94, 0.1);
+    color: #16a34a;
+}
+
+.rango-indicator.fuera-rango {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+}
+
+/* Estados vacíos */
+.no-sensores, .no-zonas-detalle {
+    text-align: center;
+    padding: 40px;
+    color: #64748b;
+}
+
+.no-sensores {
+    grid-column: 1 / -1;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-icon {
+    font-size: 3em;
+    margin-bottom: 16px;
+    display: block;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .zona-overview {
+    padding: 16px;
+    }
+
+    .zonas-resumen-grid {
+    grid-template-columns: 1fr;
+    }
+
+    .sensores-detalle-grid {
+    grid-template-columns: 1fr;
+    }
+
+    .zona-detalle-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    }
+
+    .zona-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    }
+}

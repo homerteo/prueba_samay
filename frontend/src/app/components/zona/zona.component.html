@@ -1,0 +1,125 @@
+<div class="zona-overview">
+    <!-- Card Padre: Estado por Zonas -->
+    <div class="estado-zonas-card">
+    <h3 class="card-title">🏢 Estado por Zonas</h3>
+    
+    <!-- Grid de Cards Hijas por Zona -->
+    <div class="zonas-resumen-grid">
+        @for (zona of resumenZonas(); track zona.zona) {
+        <div class="zona-resumen-card" [class]="getZonaClass(zona.estadoGeneral)">
+            <div class="zona-resumen-header">
+            <span class="zona-icono">{{ getZonaIcon(zona.estadoGeneral) }}</span>
+            <h4 class="zona-nombre">{{ zona.zona | titlecase }}</h4>
+            </div>
+            
+            <div class="zona-resumen-content">
+            <div class="sensores-count">
+                <span class="count-number">{{ zona.totalSensores }}</span>
+                <span class="count-label">Sensores</span>
+            </div>
+            
+            <!-- Badge de Estado (esquina inferior derecha) -->
+            <div class="estado-badge" [class]="zona.estadoGeneral">
+                <span class="badge-text">{{ getEstadoLabel(zona.estadoGeneral) }}</span>
+                @if (zona.alertasActivas > 0) {
+                <span class="alertas-count">{{ zona.alertasActivas }}</span>
+                }
+            </div>
+            </div>
+        </div>
+        } @empty {
+        <div class="no-zonas-resumen">
+            <span class="empty-icon">📍</span>
+            <p>No hay zonas configuradas</p>
+        </div>
+        }
+    </div>
+    </div>
+
+    <!-- Cards Padre por Zona con Sensores Detallados -->
+    @for (zona of resumenZonas(); track zona.zona) {
+    <div class="zona-detalle-card">
+        <div class="zona-detalle-header">
+        <div class="zona-info">
+            <span class="zona-icono-grande">{{ getZonaIcon(zona.estadoGeneral) }}</span>
+            <div class="zona-title-info">
+            <h3>{{ zona.zona | titlecase }}</h3>
+            <span class="zona-stats">{{ zona.sensoresActivos }}/{{ zona.totalSensores }} activos • {{ zona.porcentajeSalud }}% salud</span>
+            </div>
+        </div>
+        <div class="zona-estado-global" [class]="zona.estadoGeneral">
+            {{ getEstadoLabel(zona.estadoGeneral) }}
+        </div>
+        </div>
+
+        <!-- Grid de Sensores por Zona -->
+        <div class="sensores-detalle-grid">
+        @for (sensor of obtenerSensoresDeZona(zona.zona); track sensor.id) {
+            <div class="sensor-detalle-card" [class]="sensor.estado">
+            <!-- Header del Sensor -->
+            <div class="sensor-header">
+                <div class="sensor-title">
+                <span class="sensor-tipo-icon">{{ getTipoIcon(sensor.tipo) }}</span>
+                <h5>{{ sensor.nombre }}</h5>
+                </div>
+                <div class="sensor-estado-badge" [class]="sensor.estado">
+                {{ getEstadoLabel(sensor.estado) }}
+                </div>
+            </div>
+
+            <!-- Lectura del Sensor -->
+            <div class="sensor-lectura">
+                @if (obtenerLecturaSensor(sensor.id); as lectura) {
+                <div class="lectura-valor">
+                    <span class="valor">{{ formatearValor(lectura.valor) }}</span>
+                    <span class="unidad">{{ sensor.unidad }}</span>
+                </div>
+                <div class="lectura-timestamp">
+                    {{ lectura.timestamp | date:'HH:mm:ss' }}
+                </div>
+                } @else {
+                <div class="sin-lectura">
+                    <span class="placeholder">-- {{ sensor.unidad }}</span>
+                    <span class="sin-datos">Sin datos</span>
+                </div>
+                }
+            </div>
+
+            <!-- Ubicación Específica -->
+            <div class="sensor-ubicacion">
+                <span class="ubicacion-icon">📍</span>
+                <div class="ubicacion-info">
+                <span class="habitacion">{{ sensor.ubicacion.habitacion }}</span>
+                <span class="edificio">{{ sensor.ubicacion.edificio }}</span>
+                </div>
+            </div>
+
+            <!-- Indicadores adicionales -->
+            <div class="sensor-indicadores">
+                @if (obtenerLecturaSensor(sensor.id); as lectura) {
+                @if (tieneRangoNormal(sensor) && esNumero(lectura.valor)) {
+                    <div class="rango-indicator" [class]="getRangoEstado(obtenerValorNumerico(lectura.valor), sensor.rangoNormal)">
+                    <span class="rango-text">{{ getRangoTexto(obtenerValorNumerico(lectura.valor), sensor.rangoNormal) }}</span>
+                    </div>
+                }
+                }
+            </div>
+            </div>
+        } @empty {
+            <div class="no-sensores">
+            <span class="empty-icon">📊</span>
+            <p>No hay sensores en esta zona</p>
+            </div>
+        }
+        </div>
+    </div>
+    } @empty {
+    <div class="no-zonas-detalle">
+        <div class="empty-state">
+        <span class="empty-icon">🏢</span>
+        <h4>Sin zonas configuradas</h4>
+        <p>No se han detectado sensores con información de zona.</p>
+        </div>
+    </div>
+    }
+</div>
