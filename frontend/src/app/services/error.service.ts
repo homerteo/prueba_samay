@@ -130,11 +130,9 @@ export class ErrorService {
     
     const logEntry = `[${timestamp}] [${errorId}] ${type} - ${source}: ${message}`;
     
-    // Agregar al log interno
     const logActual = this._errorLog();
     this._errorLog.set([logEntry, ...logActual].slice(0, 1000)); // Mantener últimas 1000 entradas
-    
-    // Log a consola para desarrollo
+
     console.error(logEntry, metadata);
   }
 

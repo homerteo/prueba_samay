@@ -129,11 +129,7 @@ function registrarError(req: any, error: HttpErrorResponse, categoria: Categoria
  * Muestra mensaje de error al usuario
  */
 function mostrarErrorUsuario(categoria: CategoriaError): void {
-  // Por ahora solo console.log, más adelante se puede integrar con un servicio de notificaciones
   console.log(`💬 Mensaje para usuario: ${categoria.userMessage}`);
-  
-  // TODO: Integrar con servicio de notificaciones/toast
-  // this.notificationService.showError(categoria.userMessage);
 }
 
 /**
